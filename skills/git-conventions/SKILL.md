@@ -1,6 +1,6 @@
 ---
 name: git-conventions
-description: Generate Conventional Commit messages and Conventional Branch names, and perform the corresponding Git action only when explicitly requested. Use when the user asks for a commit message, asks to commit changes, requests a branch name, asks to create a branch, or wants guidance on Git naming.
+description: Generate Conventional Commit messages and Conventional Branch names, and create Herdr worktrees on explicit request. Use when the user asks for a commit message, asks to commit changes, requests a branch name, asks to create a branch or worktree, or wants guidance on Git naming.
 ---
 
 # Git Conventions
@@ -25,6 +25,9 @@ and conversation. State an assumption only when the intent remains ambiguous.
   do not stage, commit, create, rename, or switch branches.
 - Perform a Git mutation only when the user explicitly asks for that action,
   such as “commit these changes” or “create the branch.”
+- An explicit request to create a worktree authorizes creating the one
+  Conventional Branch required for that worktree. Do not create a branch merely
+  because a worktree could be useful.
 - An explicit action authorizes only that action and its stated scope. If an
   explicit commit request contains unrelated work that would require multiple
   commits, present the proposed grouping and get direction before proceeding.
@@ -35,6 +38,8 @@ and conversation. State an assumption only when the intent remains ambiguous.
   [references/commits.md](references/commits.md).
 - For branch names or branch-creation actions, read
   [references/branches.md](references/branches.md).
+- For a worktree request or when considering a worktree recommendation, read
+  [references/worktrees.md](references/worktrees.md).
 - Read both only when the request genuinely involves both.
 
 ## Present suggestions

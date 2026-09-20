@@ -1,2 +1,14 @@
 # Copies of real directories that sync.sh replaced. Local only.
 backups/
+
+# Never persist credentials, password-manager state, key containers, or shell history.
+*.kdb
+*.kdbx
+*.keyx
+**/.config/keepassxc/
+**/.cache/keepassxc/
+**/keepassxc.ini
+**/KeePass.config.xml
+**/.mono/keypairs/
+**/.zsh_history
+**/.bash_history

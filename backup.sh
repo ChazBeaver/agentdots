@@ -37,6 +37,17 @@ while IFS= read -r skill; do
   done < <(skill_targets)
 done < <(list_skills "$SKILLS_DIR")
 
+while IFS= read -r target; do
+  [ -n "$target" ] || continue
+  if [ -e "$target" ] && [ ! -L "$target" ]; then
+    dest="$BACKUP_ROOT/$stamp/instructions/$(basename "$(dirname "$target")")-$(basename "$target")"
+    mkdir -p "$(dirname "$dest")"
+    cp -a "$target" "$dest"
+    log_backup "Backed up $target → $dest"
+    count=$((count + 1))
+  fi
+done < <(instruction_targets)
+
 if [ "$count" -eq 0 ]; then
   log_info "Nothing to back up (no real directories would be replaced)."
 else

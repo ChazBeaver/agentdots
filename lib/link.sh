@@ -107,3 +107,21 @@ prune_stale_links() {
     done < <(find "$target" -mindepth 1 -maxdepth 1 -type l)
   done < <(skill_targets)
 }
+
+# install_instructions REPO_DIR
+# Link REPO_DIR/AGENTS.md to every path from instruction_targets. Skipped
+# with a warning when the repo has no AGENTS.md yet.
+install_instructions() {
+  local repo_dir="$1"
+  local source="$repo_dir/AGENTS.md" target
+
+  if [ ! -f "$source" ]; then
+    log_warn "No AGENTS.md in $repo_dir; global instructions not linked"
+    return 0
+  fi
+  log_sync "Instructions: AGENTS.md"
+  while IFS= read -r target; do
+    [ -n "$target" ] || continue
+    link_item "$source" "$target"
+  done < <(instruction_targets)
+}

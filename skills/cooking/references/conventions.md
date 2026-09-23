@@ -125,6 +125,7 @@ any number from any facet. Parsed.
 - instant-pot
 - grill
 - no-cook
+- air-fryer
 
 ### attribute
 - weeknight

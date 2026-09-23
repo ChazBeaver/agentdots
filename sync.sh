@@ -62,6 +62,11 @@ log_step "Linking skills..."
 install_skills "$SKILLS_DIR"
 echo
 
+# ---- Global instructions ----
+log_step "Linking global instructions..."
+install_instructions "$SCRIPT_DIR"
+echo
+
 # ---- Prune ----
 log_step "Pruning stale links that point into this repo..."
 prune_stale_links "$SCRIPT_DIR"

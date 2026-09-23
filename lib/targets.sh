@@ -26,3 +26,15 @@ skill_target_label() {
     *)                               basename "$(dirname "$1")" ;;
   esac
 }
+
+# Global instruction files. AGENTS.md at the repo root is linked to each of
+# these so every harness reads the same machine-wide rules. OpenCode also
+# falls back to ~/.claude/CLAUDE.md on its own; the explicit link keeps it
+# working if that fallback is disabled.
+instruction_targets() {
+  cat <<TARGETS
+$HOME/.claude/CLAUDE.md
+$HOME/.codex/AGENTS.md
+$HOME/.config/opencode/AGENTS.md
+TARGETS
+}

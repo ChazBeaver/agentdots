@@ -53,6 +53,23 @@ repo) into `~/.dotfiles-env.sh`, next to the appdots and hyprdots entries.
 | `~/.agents/skills/<name>` | Shared cross-agent location (also read by Codex) |
 | `~/.config/opencode/skills/<name>` | OpenCode (directory created on first sync) |
 
+## Global instructions
+
+`AGENTS.md` at the repo root holds the machine-wide rules every agent should
+follow. `sync.sh` links it to each harness's global instruction path:
+
+| Target | Tool |
+|:--|:--|
+| `~/.claude/CLAUDE.md` | Claude Code |
+| `~/.codex/AGENTS.md` | Codex |
+| `~/.config/opencode/AGENTS.md` | OpenCode |
+
+Keep it harness-agnostic and short. Rules that only apply inside one
+repository belong in that repository's own `AGENTS.md` (with `CLAUDE.md` as
+a symlink to it) and its `.agents/skills/`; agentdots never reaches into other
+checkouts. A real file already at a target path is copied to `backups/`
+before it is replaced.
+
 ## Adding a skill
 
 1. Create `skills/<name>/SKILL.md` with YAML frontmatter containing only

@@ -72,6 +72,17 @@ done < <(list_skills "$SKILLS_DIR")
 [ "$skill_count" -gt 0 ] || log_info "No skills in $SKILLS_DIR to check."
 
 echo
+log_step "Global instructions"
+if [ -f "$REPO_DIR/AGENTS.md" ]; then
+  while IFS= read -r target; do
+    [ -n "$target" ] || continue
+    check_link "$REPO_DIR/AGENTS.md" "$target"
+  done < <(instruction_targets)
+else
+  log_info "No AGENTS.md in repo; nothing to check."
+fi
+
+echo
 log_step "Stale and foreign links in target dirs"
 while IFS= read -r target; do
   [ -d "$target" ] || { log_info "Target dir missing (not created yet): $target"; continue; }

@@ -13,15 +13,23 @@ repository, and prefer a repository skill over improvising a procedure.
 
 ## Where things live
 
-Repository locations are exported in `~/.dotfiles-env.sh` as `APP_DOTS_DIR`,
-`HYPR_DOTS_DIR`, and `AGENT_DOTS_DIR`.
+Every personal repository lives under `~/Projects/home/`. Each one owns a
+single concern, converges the machine with its own script, and (where it
+sets one) exports its location from `~/.dotfiles-env.sh` together with a
+`cd` alias of the same name as the repository.
 
-| Concern | Repository |
-| --- | --- |
-| Application configs, shell, packages for Linux and macOS | appdots |
-| Hyprland, Omarchy shell, pinned Omarchy plugins and themes | hyprdots |
-| Agent skills and this file | agentdots |
-| Recipes, meal plans, pantry (for the cooking skill) | kitchen, linked at `~/kitchen` |
+| Repository | Owns | Converge / verify | Env var |
+| --- | --- | --- | --- |
+| appdots | Application configs, shell, packages for Linux and macOS | `sync.sh`, `doctor.sh` | `APP_DOTS_DIR` |
+| hyprdots | Hyprland, Omarchy shell, pinned Omarchy plugins and themes | `sync.sh`, `doctor.sh`, `tests/` | `HYPR_DOTS_DIR` |
+| agentdots | Global agent rules (this file) and portable skills | `sync.sh`, `doctor.sh` | `AGENT_DOTS_DIR` |
+| wikinotes | DevOps notes, snippets, study plans, project plans, fzf search | `install.sh` | `WIKINOTES_DIR` |
+| kitchen | Recipes, meal plans, pantry (data for the cooking skill) | linked at `~/kitchen` | none |
+| omarchy-theme-drafts | Private incubation of hand-made Omarchy themes; hyprdots pins it by commit | managed through hyprdots `themes.sh` | none |
+
+When a `cd` alias or env var is missing, check `~/.dotfiles-env.sh` first,
+then re-run that repository's converge script. When a symlink or package is
+wrong, run the owning repository's `doctor.sh`; it names the fix.
 
 Put a file in the repository that owns its concern. Skills never go in appdots
 or hyprdots' global scope; a procedure that only makes sense inside one

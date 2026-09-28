@@ -12,6 +12,17 @@ with this deliberately small local vocabulary.
 Return the subject line only unless the user explicitly asks for a body or
 footers.
 
+Always name the repository the message belongs to, in a label outside the
+message rather than in the subject. Use the repository directory name, and
+give one labeled block per repository when work spans several:
+
+````text
+**hyprdots**
+```
+fix(shell): pin font tokens to base-size 16 so every theme matches
+```
+````
+
 ## Types
 
 - `feat`: adds a user-visible capability or meaningfully extends behavior.

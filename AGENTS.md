@@ -47,7 +47,7 @@ persist, persist the intended keys with a merge step rather than the file.
 
 - Use Conventional Commits and Conventional Branch names.
 - Do not commit, push, or create branches unless asked. Leave changes in the
-  working tree and offer a message.
+  working tree and offer a message labeled with the repository name.
 - Report test and doctor results exactly; if something failed, say so first.
 
 ## Skills and schemas

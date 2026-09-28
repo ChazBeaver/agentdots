@@ -44,6 +44,8 @@ and conversation. State an assumption only when the intent remains ambiguous.
 
 ## Present suggestions
 
-Return one copy-ready suggestion when one logical answer is clear. Add a brief
+Return one copy-ready suggestion when one logical answer is clear. Label
+every commit message with the repository it belongs to (see
+[references/commits.md](references/commits.md)). Add a brief
 note only when an assumption, ambiguity, or recommended split matters. Do not
 offer a menu of alternatives unless the user asks for one.

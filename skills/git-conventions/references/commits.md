@@ -38,7 +38,7 @@ An explanatory README-only change is normally `chore`.
 
 ## Scope and description
 
-- Add a scope when one stable subsystem is obvious, such as `cooking` or
+- Add a scope when one stable subsystem is obvious, such as `themes` or
   `sync`. Use a lowercase, hyphen-separated noun. Omit the scope for broad or
   ambiguous changes.
 - Write a concise, imperative description that starts lowercase and has no
@@ -49,7 +49,7 @@ An explanatory README-only change is normally `chore`.
 Examples:
 
 ```text
-feat(cooking): add pantry-aware meal filtering
+feat(themes): add pinned theme updates
 fix(sync): preserve foreign skill links
 chore: update installation notes
 feat(sync)!: change the skill target layout

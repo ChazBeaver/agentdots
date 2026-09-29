@@ -24,7 +24,6 @@ sets one) exports its location from `~/.dotfiles-env.sh` together with a
 | hyprdots | Hyprland, Omarchy shell, pinned Omarchy plugins and themes | `sync.sh`, `doctor.sh`, `tests/` | `HYPR_DOTS_DIR` |
 | agentdots | Global agent rules (this file) and portable skills | `sync.sh`, `doctor.sh` | `AGENT_DOTS_DIR` |
 | wikinotes | DevOps notes, snippets, study plans, project plans, fzf search | `install.sh` | `WIKINOTES_DIR` |
-| kitchen | Recipes, meal plans, pantry (data for the cooking skill) | linked at `~/kitchen` | none |
 | omarchy-theme-drafts | Private incubation of hand-made Omarchy themes; hyprdots pins it by commit | managed through hyprdots `themes.sh` | none |
 
 When a `cd` alias or env var is missing, check `~/.dotfiles-env.sh` first,

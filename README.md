@@ -31,6 +31,125 @@ To check for drift without changing anything:
 `sync.sh` also writes `AGENT_DOTS_DIR` and an `agentdots` alias (cd into the
 repo) into `~/.dotfiles-env.sh`, next to the appdots and hyprdots entries.
 
+## Manual operation
+
+Run these commands in a terminal; no agent CLI needs to be running. You need
+Bash, Git, and the usual Unix file utilities. Examples assume this checkout:
+
+```bash
+cd ~/Projects/home/agentdots
+git status --short
+git pull --ff-only           # stop and resolve divergence if this fails
+./sync.sh                   # backs up, links instructions/skills, prunes stale links
+source ~/.dotfiles-env.sh    # load the repaired path and alias in this shell
+./doctor.sh                 # success ends with "All checks passed."
+agentdots                   # return here from another directory
+```
+
+Individual entrypoints take no arguments:
+
+| Example | Effect |
+| --- | --- |
+| `./backup.sh` | Copy conflicting real skills and instruction files into `backups/<timestamp>/`; leave originals in place. Sync calls this automatically. |
+| `./sync.sh` | Apply the repo to all targets, including tools not installed yet. |
+| `./doctor.sh` | Run both checks below; exit nonzero on drift. |
+| `bash doctor/env.sh` | Check the persisted repo path and alias. |
+| `bash doctor/symlinks.sh` | Check skills, instructions, stale links, and foreign links. |
+
+These entrypoints do not implement a dry run or argument parser; do not use
+`--help` to preview a sync. Files in `lib/` are sourced implementation helpers,
+not standalone commands.
+
+The included `git-conventions` skill is also readable without an agent:
+see its [commit format](skills/git-conventions/references/commits.md),
+[branch naming](skills/git-conventions/references/branches.md), and
+[Herdr worktree procedure](skills/git-conventions/references/worktrees.md).
+For example, when you intentionally want a new worktree, run this inside a
+Herdr session from the target repository (it creates a branch and workspace):
+
+```bash
+herdr worktree create --cwd "$PWD" --branch chore/manual-usage --no-focus
+```
+
+It uses the current branch as the base; supply `--base main` only when you
+want an existing main branch instead. Read the returned path/workspace ID;
+do not guess its location. This is an optional workflow, not a sync step.
+
+### Edit, add, rename, or retire a skill
+
+Edit an existing skill and its references directly, then check it:
+
+```bash
+cd ~/Projects/home/agentdots
+nvim skills/git-conventions/SKILL.md
+./sync.sh
+./doctor.sh
+```
+
+To add a skill, choose a previously unused name. This example creates a small
+portable skill that you can expand before installing:
+
+```bash
+mkdir skills/repo-review
+cat > skills/repo-review/SKILL.md <<'EOF'
+---
+name: repo-review
+description: Review a repository's working changes and report findings.
+---
+
+Read AGENTS.md, inspect git diff, and report actionable findings with file paths.
+EOF
+./sync.sh
+./doctor.sh
+```
+
+To rename that example, move its folder, update `name:` and any references,
+and sync. The old dangling links are pruned automatically:
+
+```bash
+mv skills/repo-review skills/change-review
+nvim skills/change-review/SKILL.md
+./sync.sh
+./doctor.sh
+```
+
+To retire it without throwing away the source, move it outside `skills/`:
+
+```bash
+mkdir -p ~/Backups/retired-agent-skills
+mv skills/change-review ~/Backups/retired-agent-skills/
+./sync.sh
+./doctor.sh
+```
+
+To edit the global rules, run `nvim AGENTS.md`, then `./doctor.sh`; existing
+symlinks expose the edit immediately. To add another tool, edit both the
+target lists and labels in `lib/targets.sh`, then run `./sync.sh` and
+`./doctor.sh`. Removing a target from that file stops future management; it
+does **not** remove links already installed in the former target directory.
+
+### Inspect and recover a replaced file
+
+```bash
+find backups -mindepth 1 -maxdepth 4 -print
+readlink ~/.codex/AGENTS.md
+```
+
+For example, to restore a previous Codex instruction file, set `saved` to the
+actual backup path printed above. First verify the destination is still the
+agentdots link, then unlink it and copy the saved file:
+
+```bash
+saved='backups/REPLACE_WITH_TIMESTAMP/instructions/.codex-AGENTS.md'
+test -f "$saved" && test -L ~/.codex/AGENTS.md &&
+  test "$(readlink ~/.codex/AGENTS.md)" = "$PWD/AGENTS.md" &&
+  unlink ~/.codex/AGENTS.md && cp -a "$saved" ~/.codex/AGENTS.md
+```
+
+This intentionally creates drift; the next sync will manage the path again.
+Backups are local recovery data, not files to commit. After moving the whole
+checkout, run its `./sync.sh` and reload `~/.dotfiles-env.sh`.
+
 ## Layout
 
 | Path | Purpose |
@@ -87,9 +206,8 @@ link from every tool.
 
 - `link_item` replaces a wrong symlink or a real directory at the target path.
   `backup.sh` copies real directories aside first; symlinks are not backed up.
-- Only paths of the form `<target>/<skill-name>` are ever written. Nothing else
-  under `~/.claude`, `~/.codex`, `~/.agents`, or `~/.config/opencode` is read
-  or modified.
+- Sync manages `<target>/<skill-name>`, the global instruction paths listed
+  above, and its entries in `~/.dotfiles-env.sh`.
 - Pruning only removes symlinks whose destination is inside this repo and no
   longer exists. Links to anywhere else are reported by `doctor.sh` as
   "foreign" and left alone.

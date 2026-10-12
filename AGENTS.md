@@ -22,6 +22,7 @@ sets one) exports its location from `~/.dotfiles-env.sh` together with a
 | --- | --- | --- | --- |
 | appdots | Application configs, shell, packages for Linux and macOS | `sync.sh`, `doctor.sh` | `APP_DOTS_DIR` |
 | hyprdots | Hyprland, Omarchy shell, pinned Omarchy plugins and themes | `sync.sh`, `doctor.sh`, `tests/` | `HYPR_DOTS_DIR` |
+| cyberdots | Optional, removable security and situational-awareness tooling for Omarchy | `install.sh`, `sync.sh`, `uninstall.sh`, `doctor.sh`, `tests/` | `CYBER_DOTS_DIR` |
 | agentdots | Global agent rules (this file) and portable skills | `sync.sh`, `doctor.sh` | `AGENT_DOTS_DIR` |
 | wikinotes | DevOps notes, snippets, study plans, project plans, fzf search | `install.sh` | `WIKINOTES_DIR` |
 | omarchy-theme-vault | Private incubation of hand-made Omarchy themes; hyprdots pins it by commit | managed through hyprdots `themes.sh` | none |

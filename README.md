@@ -31,6 +31,28 @@ To check for drift without changing anything:
 `sync.sh` also writes `AGENT_DOTS_DIR` and an `agentdots` alias (cd into the
 repo) into `~/.dotfiles-env.sh`, next to the appdots and hyprdots entries.
 
+## Use the skills
+
+Ask for a skill by name in the agent client while working in the repository
+that owns the change. These examples are ordinary requests, not client-specific
+slash commands:
+
+| Skill | Purpose | Example request |
+| --- | --- | --- |
+| [plan-change](skills/plan-change/SKILL.md) | Resolve design questions and preserve the agreed requirements in a task brief. | "Use plan-change to plan the package cleanup and put the brief in my existing project plan." |
+| [review-changes](skills/review-changes/SKILL.md) | Check working changes against the original requirements and repository standards, with evidence for each verdict. | "Use review-changes against this task brief, including staged, unstaged, and relevant untracked files." |
+| [git-conventions](skills/git-conventions/SKILL.md) | Conventional Commit messages, branch names, and explicitly requested Herdr worktrees. | "Suggest a commit message for these changes." |
+
+The [plan, build, and review guide](docs/workflows/plan-build-review.md) shows
+how to hand a brief to a builder and then a separate reviewer. The new planning
+and review packages adapt Matt Pocock's approach with pinned source references
+and MIT notices in each package's `UPSTREAM.md`. They are self-contained and
+use only the portable `name` and `description` metadata.
+
+The [evaluation scenarios](evals/plan-review/scenarios.md) define expected
+behavior for future trials. A passing package validator and successful install
+establish structure and links; model behavior needs a separate trial.
+
 ## Manual operation
 
 Run these commands in a terminal; no agent CLI needs to be running. You need
@@ -178,7 +200,9 @@ ownership decision.
 | `backup.sh` | Copies any real (non-symlink) directory sync would replace into `backups/<timestamp>/`. Runs inside sync. |
 | `doctor.sh`, `doctor/*.sh` | Read-only drift checks. Non-zero exit on drift. |
 | `test.sh`, `tests/` | Regression entrypoint and temporary fixtures; no live client installation. |
-| `docs/templates/task-brief.md` | Reusable outcome, scope, acceptance, and evidence template for substantive changes. |
+| `skills/plan-change/templates/task-brief.md` | Canonical outcome, scope, acceptance, and evidence template; `docs/templates/task-brief.md` links to it. |
+| `docs/workflows/plan-build-review.md` | Manual handoff procedure and example prompts for one builder and a separate reviewer. |
+| `evals/plan-review/scenarios.md` | Curated planning/review prompts and expected outcomes; raw trial output stays local. |
 
 ## Where skills are linked
 

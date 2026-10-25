@@ -22,6 +22,10 @@ These instructions apply to developing this repository.
 
 ## Plan substantive changes
 
+For requested planning, use `plan-change`; for requested working-change review,
+use `review-changes`. See [the workflow](docs/workflows/plan-build-review.md)
+for a manual handoff between a builder and a separate reviewer.
+
 Use [the task brief](docs/templates/task-brief.md) to make the requested
 outcome, scope, acceptance criteria, and evidence explicit. It can live in
 an existing issue or plan; a new file is not required for every change.

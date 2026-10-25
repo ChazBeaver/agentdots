@@ -1,6 +1,6 @@
 # agentdots
 
-Portable AI agent skills, installed by symlink into every agent CLI on the
+Portable AI agent rules and skills, installed by symlink into every agent CLI on the
 machine. Sibling of `appdots` (app configs) and `hyprdots` (Hyprland), using
 the same installer contract: declarative, idempotent, safe to rerun.
 
@@ -53,6 +53,7 @@ Individual entrypoints take no arguments:
 | `./backup.sh` | Copy conflicting real skills and instruction files into `backups/<timestamp>/`; leave originals in place. Sync calls this automatically. |
 | `./sync.sh` | Apply the repo to all targets, including tools not installed yet. |
 | `./doctor.sh` | Run both checks below; exit nonzero on drift. |
+| `./test.sh` | Run all isolated regression suites; continue after a failed suite and return nonzero if any fail. |
 | `bash doctor/env.sh` | Check the persisted repo path and alias. |
 | `bash doctor/symlinks.sh` | Check skills, instructions, stale links, and foreign links. |
 
@@ -122,8 +123,12 @@ mv skills/change-review ~/Backups/retired-agent-skills/
 ./doctor.sh
 ```
 
-To edit the global rules, run `nvim AGENTS.md`, then `./doctor.sh`; existing
-symlinks expose the edit immediately. To add another tool, edit both the
+To edit the global rules, run `nvim instructions/global.md`, then `./doctor.sh`;
+existing symlinks expose the edit immediately. The root `AGENTS.md` and its
+relative `CLAUDE.md` link contain instructions for developing Agentdots itself.
+After updating an older installation that linked clients to the root file,
+run `./sync.sh` to migrate those links to `instructions/global.md`.
+To add another tool, edit both the
 target lists and labels in `lib/targets.sh`, then run `./sync.sh` and
 `./doctor.sh`. Removing a target from that file stops future management; it
 does **not** remove links already installed in the former target directory.
@@ -142,7 +147,7 @@ agentdots link, then unlink it and copy the saved file:
 ```bash
 saved='backups/REPLACE_WITH_TIMESTAMP/instructions/.codex-AGENTS.md'
 test -f "$saved" && test -L ~/.codex/AGENTS.md &&
-  test "$(readlink ~/.codex/AGENTS.md)" = "$PWD/AGENTS.md" &&
+  test "$(readlink ~/.codex/AGENTS.md)" = "$PWD/instructions/global.md" &&
   unlink ~/.codex/AGENTS.md && cp -a "$saved" ~/.codex/AGENTS.md
 ```
 
@@ -155,13 +160,17 @@ checkout, run its `./sync.sh` and reload `~/.dotfiles-env.sh`.
 | Path | Purpose |
 |:--|:--|
 | `skills/<name>/` | One skill per folder. Linked only if it contains `SKILL.md`. |
-| `lib/targets.sh` | The list of tool directories every skill is linked into. Edit here to add or drop a tool. |
+| `instructions/global.md` | Shared policy installed into global client instruction paths. |
+| `AGENTS.md`, `CLAUDE.md` | Repository development instructions and their relative symlink; never exported globally. |
+| `lib/targets.sh` | Shared instruction source and client target lists. Edit here to add or drop a tool. |
 | `lib/link.sh` | `link_item` (copied from appdots), `install_skills`, `prune_stale_links`. |
 | `lib/env.sh` | Persists `AGENT_DOTS_DIR` and the alias. |
 | `lib/log.sh`, `lib/detect.sh` | Verbatim from appdots. |
 | `sync.sh` | Backup, link every skill into every target, prune stale links. |
 | `backup.sh` | Copies any real (non-symlink) directory sync would replace into `backups/<timestamp>/`. Runs inside sync. |
 | `doctor.sh`, `doctor/*.sh` | Read-only drift checks. Non-zero exit on drift. |
+| `test.sh`, `tests/` | Regression entrypoint and temporary fixtures; no live client installation. |
+| `docs/templates/task-brief.md` | Reusable outcome, scope, acceptance, and evidence template for substantive changes. |
 
 ## Where skills are linked
 
@@ -174,7 +183,7 @@ checkout, run its `./sync.sh` and reload `~/.dotfiles-env.sh`.
 
 ## Global instructions
 
-`AGENTS.md` at the repo root holds the machine-wide rules every agent should
+`instructions/global.md` holds the machine-wide rules every agent should
 follow. `sync.sh` links it to each harness's global instruction path:
 
 | Target | Tool |
@@ -188,6 +197,17 @@ repository belong in that repository's own `AGENTS.md` (with `CLAUDE.md` as
 a symlink to it) and its `.agents/skills/`; agentdots never reaches into other
 checkouts. A real file already at a target path is copied to `backups/`
 before it is replaced.
+
+`./test.sh` checks migration from the old root instruction source, separation
+of global and repository instructions, repeated installation, checkout moves,
+missing-source failures, and the aggregate runner's failure handling. The
+fixtures route client paths into temporary directories without changing `HOME`.
+The real installer and doctor are exercised with those isolated targets.
+
+For a substantive change, use [the task brief](docs/templates/task-brief.md)
+in the existing issue or plan. Keep domain vocabulary in the owning repo's
+glossary, architectural tradeoffs in its decision records, and acceptance
+criteria in the brief. These documents capture intent; session logs stay local.
 
 ## Adding a skill
 

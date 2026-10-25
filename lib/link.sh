@@ -109,17 +109,18 @@ prune_stale_links() {
 }
 
 # install_instructions REPO_DIR
-# Link REPO_DIR/AGENTS.md to every path from instruction_targets. Skipped
-# with a warning when the repo has no AGENTS.md yet.
+# Link the shared source from instruction_source to every client target.
+# A missing source is an error; repository instructions are never a fallback.
 install_instructions() {
   local repo_dir="$1"
-  local source="$repo_dir/AGENTS.md" target
+  local source target
+  source="$(instruction_source "$repo_dir")"
 
   if [ ! -f "$source" ]; then
-    log_warn "No AGENTS.md in $repo_dir; global instructions not linked"
-    return 0
+    log_err "Missing global instructions: $source; restore this tracked file before syncing"
+    return 1
   fi
-  log_sync "Instructions: AGENTS.md"
+  log_sync "Instructions: instructions/global.md"
   while IFS= read -r target; do
     [ -n "$target" ] || continue
     link_item "$source" "$target"

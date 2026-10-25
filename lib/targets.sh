@@ -27,7 +27,12 @@ skill_target_label() {
   esac
 }
 
-# Global instruction files. AGENTS.md at the repo root is linked to each of
+# The shared source is separate from repository development instructions.
+instruction_source() {
+  printf '%s/instructions/global.md\n' "$1"
+}
+
+# Global instruction files. instructions/global.md is linked to each of
 # these so every harness reads the same machine-wide rules. OpenCode also
 # falls back to ~/.claude/CLAUDE.md on its own; the explicit link keeps it
 # working if that fallback is disabled.

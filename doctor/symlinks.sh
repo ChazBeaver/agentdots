@@ -73,13 +73,24 @@ done < <(list_skills "$SKILLS_DIR")
 
 echo
 log_step "Global instructions"
-if [ -f "$REPO_DIR/AGENTS.md" ]; then
+global_source="$(instruction_source "$REPO_DIR")"
+if [ -f "$global_source" ]; then
   while IFS= read -r target; do
     [ -n "$target" ] || continue
-    check_link "$REPO_DIR/AGENTS.md" "$target"
+    check_link "$global_source" "$target"
   done < <(instruction_targets)
 else
-  log_info "No AGENTS.md in repo; nothing to check."
+  log_err "Missing global instructions: $global_source; restore the tracked file"
+  DRIFT=1
+fi
+
+log_step "Repository instructions"
+if [[ ! -f "$REPO_DIR/AGENTS.md" || ! -L "$REPO_DIR/CLAUDE.md" ||
+      "$(readlink "$REPO_DIR/CLAUDE.md" 2>/dev/null || true)" != AGENTS.md ]]; then
+  log_err "Restore the tracked AGENTS.md and relative CLAUDE.md -> AGENTS.md link"
+  DRIFT=1
+else
+  log_ok "Repository instructions are separate from global policy"
 fi
 
 echo

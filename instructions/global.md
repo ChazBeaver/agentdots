@@ -1,0 +1,78 @@
+# Global agent instructions
+
+These rules apply on every machine and in every directory, for any coding
+agent. They are installed by agentdots and are deliberately harness-agnostic.
+A repository's own `AGENTS.md` adds to them and wins on conflict.
+
+## Read the repository's instructions first
+
+Every personal repository carries an `AGENTS.md` at its root (with `CLAUDE.md`
+as a symlink to it) and may carry repository-scoped skills under
+`.agents/skills/`. Read the root file before changing anything in that
+repository, and prefer a repository skill over improvising a procedure.
+
+## Where things live
+
+Every personal repository lives under `~/Projects/home/`. Each one owns a
+single concern, converges the machine with its own script, and (where it
+sets one) exports its location from `~/.dotfiles-env.sh` together with a
+`cd` alias of the same name as the repository.
+
+| Repository | Owns | Converge / verify | Env var |
+| --- | --- | --- | --- |
+| appdots | Application configs, shell, packages for Linux and macOS | `sync.sh`, `doctor.sh` | `APP_DOTS_DIR` |
+| hyprdots | Hyprland, Omarchy shell, pinned Omarchy plugins and themes | `sync.sh`, `doctor.sh`, `tests/` | `HYPR_DOTS_DIR` |
+| cyberdots | Optional, removable security and situational-awareness tooling for Omarchy | `install.sh`, `sync.sh`, `uninstall.sh`, `doctor.sh`, `tests/` | `CYBER_DOTS_DIR` |
+| agentdots | Global agent rules (this file) and portable skills | `sync.sh`, `doctor.sh` | `AGENT_DOTS_DIR` |
+| wikinotes | DevOps notes, snippets, study plans, project plans, fzf search | `install.sh` | `WIKINOTES_DIR` |
+| omarchy-theme-vault | Private incubation of hand-made Omarchy themes; hyprdots pins it by commit | managed through hyprdots `themes.sh` | none |
+
+When a `cd` alias or env var is missing, check `~/.dotfiles-env.sh` first,
+then re-run that repository's converge script. When a symlink or package is
+wrong, run the owning repository's `doctor.sh`; it names the fix.
+
+Put a file in the repository that owns its concern. Skills never go in appdots
+or hyprdots' global scope; a procedure that only makes sense inside one
+repository goes in that repository's `.agents/skills/`. If ownership is
+unclear, ask.
+
+## Persist intent, never state
+
+Version what was decided: configs, instructions, skills, pinned sources.
+Never commit credentials, tokens, session or history files, caches, or
+anything a tool generated about itself. If a tool rewrites a file you want to
+persist, persist the intended keys with a merge step rather than the file.
+
+## Git
+
+- Use Conventional Commits and Conventional Branch names.
+- Do not commit, push, or create branches unless asked. Leave changes in the
+  working tree.
+- When a change reaches a natural stopping point and looks commit-ready,
+  proactively suggest a Conventional Commit message, name the repository it
+  belongs to, and ask whether to make the commit — without waiting to be
+  asked first. This is a judgment call, not a prompt for every edit: skip it
+  for changes still in flux and raise it once work on a repo settles.
+- Report test and doctor results exactly; if something failed, say so first.
+
+## Skills and schemas
+
+- A skill is portable: `SKILL.md` frontmatter holds only `name` and
+  `description`, with no tool-specific keys, `$ARGUMENTS`, or slash-command
+  assumptions. Detail lives in files beside it, referenced by relative path.
+- Prefer the smallest schema that answers the real queries. One tagged field
+  with an enforced vocabulary beats many optional fields, and searchable data
+  is derived from content rather than maintained twice.
+
+## Omarchy machines
+
+- Never modify anything under `/usr/share/omarchy/`; reading it is encouraged.
+- Prefer the `omarchy` CLI over hand-editing what it manages, and validate
+  Hyprland changes with `hyprctl reload` followed by `hyprctl configerrors`.
+
+## Working style
+
+- Verify with the repository's own `doctor.sh` and tests before reporting done.
+- Make the smallest change that fully solves the request; do not widen scope.
+- When a repository already has a mechanism for something, extend it instead
+  of adding a parallel one.

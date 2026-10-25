@@ -24,6 +24,7 @@ skill_targets() { printf '%s\n' "$INSTRUCTION_TEST_TARGET_ROOT/skills"; }
 checkout="$fixture_dir/checkout"
 mkdir -p "$checkout/instructions" "$checkout/doctor"
 cp -R "$REPO_DIR/lib" "$checkout/lib"
+cp -R "$REPO_DIR/scripts" "$checkout/scripts"
 cp "$REPO_DIR/doctor/symlinks.sh" "$checkout/doctor/symlinks.sh"
 cp "$REPO_DIR/AGENTS.md" "$checkout/AGENTS.md"
 cp -P "$REPO_DIR/CLAUDE.md" "$checkout/CLAUDE.md"

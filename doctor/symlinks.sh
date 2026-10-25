@@ -5,7 +5,7 @@ IFS=$'\n\t'
 # Verify every symlink sync.sh would create exists and points correctly.
 # Read-only. Reports:
 #   - DRIFT (error) : link missing, wrong target, replaced by a real dir, or
-#                     a link into this repo that no longer resolves
+#                     a link into an owned checkout that is not an active skill
 #   - FOREIGN (info): links in a target dir that point outside this repo
 #                     (e.g. omarchy's bundled skills). Never drift.
 
@@ -19,6 +19,7 @@ source "$REPO_DIR/lib/log.sh"
 source "$REPO_DIR/lib/targets.sh"
 # shellcheck source=../lib/link.sh
 source "$REPO_DIR/lib/link.sh"
+source "$REPO_DIR/lib/env.sh"
 
 DRIFT=0
 
@@ -58,6 +59,7 @@ log_info "Symlink drift check"
 echo
 
 skill_count=0
+skill_dirs="$(list_skills "$SKILLS_DIR")"
 while IFS= read -r skill; do
   [ -n "$skill" ] || continue
   name="$(basename "$skill")"
@@ -67,7 +69,7 @@ while IFS= read -r skill; do
     check_link "$skill" "$target/$name"
   done < <(skill_targets)
   skill_count=$((skill_count + 1))
-done < <(list_skills "$SKILLS_DIR")
+done <<< "$skill_dirs"
 
 [ "$skill_count" -gt 0 ] || log_info "No skills in $SKILLS_DIR to check."
 
@@ -95,22 +97,21 @@ fi
 
 echo
 log_step "Stale and foreign links in target dirs"
+previous_repo_dir="$(installed_agentdots_dir)"
 while IFS= read -r target; do
   [ -d "$target" ] || { log_info "Target dir missing (not created yet): $target"; continue; }
   while IFS= read -r link; do
     [ -n "$link" ] || continue
     dest="$(readlink "$link" 2>/dev/null || true)"
-    case "$dest" in
-      "$REPO_DIR"/*)
-        if [ ! -e "$link" ]; then
-          log_err "Stale link into repo: $link → $dest"
-          DRIFT=1
-        fi
-        ;;
-      *)
-        log_info "Foreign: $link → $dest"
-        ;;
-    esac
+    if link_points_into_repo "$link" "$REPO_DIR" ||
+       link_points_into_repo "$link" "$previous_repo_dir"; then
+      if ! skill_link_active "$REPO_DIR" "$link"; then
+        log_err "Retired or misplaced skill link: $link → $dest"
+        DRIFT=1
+      fi
+    else
+      log_info "Foreign: $link → $dest"
+    fi
   done < <(find "$target" -mindepth 1 -maxdepth 1 -type l | sort)
 done < <(skill_targets)
 

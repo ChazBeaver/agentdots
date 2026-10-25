@@ -4,9 +4,29 @@
 # Writes AGENT_DOTS_DIR + alias into the same ~/.dotfiles-env.sh that appdots
 # and hyprdots use, so one file carries every *dots repo location.
 
+agentdots_env_file() {
+  printf '%s/.dotfiles-env.sh\n' "$HOME"
+}
+
+# Read only the literal export produced by ensure_agentdots_env; do not source
+# arbitrary shell code when determining ownership of a previous checkout.
+installed_agentdots_dir() {
+  local env_file line result=""
+  env_file="$(agentdots_env_file)"
+  [[ -f "$env_file" ]] || return 0
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    if [[ "$line" =~ ^export\ AGENT_DOTS_DIR=\"(/[^\"]+)\"$ ]]; then
+      result="${BASH_REMATCH[1]}"
+    fi
+  done < "$env_file"
+  [[ "$result" != / ]] || result=""
+  printf '%s\n' "$result"
+}
+
 ensure_agentdots_env() {
   local repo_dir="$1"
-  local env_file="$HOME/.dotfiles-env.sh"
+  local env_file
+  env_file="$(agentdots_env_file)"
   local escaped_repo_dir
   local expected_export="export AGENT_DOTS_DIR=\"$repo_dir\""
 

@@ -20,6 +20,7 @@ source "$SCRIPT_DIR/lib/link.sh"
 
 stamp="$(date +%Y%m%d-%H%M%S)"
 count=0
+skill_dirs="$(list_skills "$SKILLS_DIR")"
 
 while IFS= read -r skill; do
   [ -n "$skill" ] || continue
@@ -35,7 +36,7 @@ while IFS= read -r skill; do
       count=$((count + 1))
     fi
   done < <(skill_targets)
-done < <(list_skills "$SKILLS_DIR")
+done <<< "$skill_dirs"
 
 while IFS= read -r target; do
   [ -n "$target" ] || continue

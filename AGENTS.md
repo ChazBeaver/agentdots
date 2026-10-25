@@ -14,6 +14,9 @@ These instructions apply to developing this repository.
   Keep installation, diagnostics, and recovery documentation consistent with it.
 - Reusable skills live under `skills/<name>/`; procedures specific to another
   repository belong in that repository's `.agents/skills/`.
+  Every directory under `skills/` is active and must pass package validation;
+  keep drafts elsewhere. `scripts/validate-skills.py` is the shared validation
+  entrypoint used by installation and diagnostics.
 - Backups and client state stay local. Follow the shared rules about secrets
   and Git authorization; leave changes uncommitted unless asked to commit.
 

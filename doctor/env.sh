@@ -7,10 +7,11 @@ IFS=$'\n\t'
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]:-${(%):-%N}}")" &>/dev/null && pwd)"
 REPO_DIR="$(cd -- "$SCRIPT_DIR/.." &>/dev/null && pwd)"
-ENV_FILE="$HOME/.dotfiles-env.sh"
 
 # shellcheck source=../lib/log.sh
 source "$REPO_DIR/lib/log.sh"
+source "$REPO_DIR/lib/env.sh"
+ENV_FILE="$(agentdots_env_file)"
 
 status=0
 

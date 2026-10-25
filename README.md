@@ -34,7 +34,9 @@ repo) into `~/.dotfiles-env.sh`, next to the appdots and hyprdots entries.
 ## Manual operation
 
 Run these commands in a terminal; no agent CLI needs to be running. You need
-Bash, Git, and the usual Unix file utilities. Examples assume this checkout:
+Bash, Git, Python 3, and the usual Unix file utilities. The validator uses
+only Python's standard library; no Python packages need installing.
+Examples assume this checkout:
 
 ```bash
 cd ~/Projects/home/agentdots
@@ -51,11 +53,11 @@ Individual entrypoints take no arguments:
 | Example | Effect |
 | --- | --- |
 | `./backup.sh` | Copy conflicting real skills and instruction files into `backups/<timestamp>/`; leave originals in place. Sync calls this automatically. |
-| `./sync.sh` | Apply the repo to all targets, including tools not installed yet. |
+| `./sync.sh` | Validate active skills and check collisions, then apply the repo to all targets, including tools not installed yet. |
 | `./doctor.sh` | Run both checks below; exit nonzero on drift. |
 | `./test.sh` | Run all isolated regression suites; continue after a failed suite and return nonzero if any fail. |
 | `bash doctor/env.sh` | Check the persisted repo path and alias. |
-| `bash doctor/symlinks.sh` | Check skills, instructions, stale links, and foreign links. |
+| `bash doctor/symlinks.sh` | Validate skill packages; check installed skills, instructions, retired links, and foreign links. |
 
 These entrypoints do not implement a dry run or argument parser; do not use
 `--help` to preview a sync. Files in `lib/` are sourced implementation helpers,
@@ -87,7 +89,7 @@ nvim skills/git-conventions/SKILL.md
 ./doctor.sh
 ```
 
-To add a skill, choose a previously unused name. This example creates a small
+To add a skill, choose a name unused in the client targets. This example creates a small
 portable skill that you can expand before installing:
 
 ```bash
@@ -105,7 +107,7 @@ EOF
 ```
 
 To rename that example, move its folder, update `name:` and any references,
-and sync. The old dangling links are pruned automatically:
+and sync. Links for the old name are pruned automatically:
 
 ```bash
 mv skills/repo-review skills/change-review
@@ -153,17 +155,23 @@ test -f "$saved" && test -L ~/.codex/AGENTS.md &&
 
 This intentionally creates drift; the next sync will manage the path again.
 Backups are local recovery data, not files to commit. After moving the whole
-checkout, run its `./sync.sh` and reload `~/.dotfiles-env.sh`.
+checkout, run its `./sync.sh` and reload `~/.dotfiles-env.sh`. Sync reads the
+previous `AGENT_DOTS_DIR` export without executing the environment file, so
+links from the recorded old checkout remain identifiable as owned. It updates
+that export only after convergence succeeds. Keep the old export until sync
+has repaired the links; links from any other checkout require an explicit
+ownership decision.
 
 ## Layout
 
 | Path | Purpose |
 |:--|:--|
-| `skills/<name>/` | One skill per folder. Linked only if it contains `SKILL.md`. |
+| `skills/<name>/` | Active skill packages; every directory must have a valid `SKILL.md`. Keep drafts outside this directory. |
 | `instructions/global.md` | Shared policy installed into global client instruction paths. |
 | `AGENTS.md`, `CLAUDE.md` | Repository development instructions and their relative symlink; never exported globally. |
 | `lib/targets.sh` | Shared instruction source and client target lists. Edit here to add or drop a tool. |
-| `lib/link.sh` | `link_item` (copied from appdots), `install_skills`, `prune_stale_links`. |
+| `lib/link.sh` | Skill preflight, ownership checks, link installation, and retirement pruning. |
+| `scripts/validate-skills.py` | Read-only metadata and bundled-reference validation; prints active skill paths only when all packages pass. |
 | `lib/env.sh` | Persists `AGENT_DOTS_DIR` and the alias. |
 | `lib/log.sh`, `lib/detect.sh` | Verbatim from appdots. |
 | `sync.sh` | Backup, link every skill into every target, prune stale links. |
@@ -198,9 +206,9 @@ a symlink to it) and its `.agents/skills/`; agentdots never reaches into other
 checkouts. A real file already at a target path is copied to `backups/`
 before it is replaced.
 
-`./test.sh` checks migration from the old root instruction source, separation
-of global and repository instructions, repeated installation, checkout moves,
-missing-source failures, and the aggregate runner's failure handling. The
+`./test.sh` checks global instruction migration, package validation, foreign
+collisions, real-file backups, repeated installation, renames, retirement,
+checkout moves and retries, and the aggregate runner's failure handling. The
 fixtures route client paths into temporary directories without changing `HOME`.
 The real installer and doctor are exercised with those isolated targets.
 
@@ -220,14 +228,56 @@ criteria in the brief. These documents capture intent; session logs stay local.
 3. Run `./sync.sh`.
 
 Renaming or deleting a skill folder and re-running `./sync.sh` removes the old
-link from every tool.
+link from every tool. Removing only `SKILL.md` leaves an invalid active package;
+doctor reports it and sync stops. Restore the file or move the whole draft
+outside `skills/` before retrying.
+
+### Portable package checks
+
+Sync and doctor use the same validator. To run it without changing clients:
+
+```bash
+python3 -B scripts/validate-skills.py skills
+```
+
+The header begins and ends with `---` and has exactly two nonempty string
+fields: `name` and `description`. The name matches its directory and uses
+lowercase letters, digits, and single hyphens, at most 64 characters. Supported
+values are plain text, YAML single-quoted strings, JSON double-quoted strings,
+and indented literal (`|`) or folded (`>`) blocks, optionally with `+` or `-`.
+Quote punctuation such as `: ` or ` #`, numeric text, and words interpreted
+as booleans by YAML readers. This is a documented YAML subset, not a general
+YAML parser: collections, tags, aliases, extra keys, and other scalar syntax
+must be rewritten into this portable format before installation.
+
+Instructions must follow the header. Local Markdown links and reference
+definitions must resolve inside the skill folder, including through linked
+Markdown documents. Percent-encoded paths and symlinks are resolved before
+checking that boundary. Fenced examples, inline code, and HTML comments are
+excluded. External links are not fetched, and fragment names are not checked.
+Use Markdown links for required supporting files; plain text mentions and
+runtime calls to other skills are not dependency declarations this check can
+verify. Packaging checks do not establish correct agent behavior or triggering.
+
+### Skill ownership collisions
+
+Before backups, environment changes, or client link changes, sync validates
+all active packages and checks their names across every skill target. A
+same-named symlink into another source, including a dangling foreign link,
+stops installation and stays intact. Choose another skill name, or deliberately
+move the existing link aside after deciding to replace it. There is no
+automatic adoption of foreign skill links.
 
 ## Behaviour notes
 
-- `link_item` replaces a wrong symlink or a real directory at the target path.
-  `backup.sh` copies real directories aside first; symlinks are not backed up.
+- Skill installation repairs links owned by this checkout or the previous
+  checkout recorded in the environment file. Non-colliding foreign skill
+  links remain informational and are left alone.
+- Real files and directories at managed targets retain the existing recovery
+  workflow: `backup.sh` copies them aside before sync replaces them. Global
+  instruction links retain their existing replacement behavior.
 - Sync manages `<target>/<skill-name>`, the global instruction paths listed
   above, and its entries in `~/.dotfiles-env.sh`.
-- Pruning only removes symlinks whose destination is inside this repo and no
-  longer exists. Links to anywhere else are reported by `doctor.sh` as
-  "foreign" and left alone.
+- Pruning removes owned links that no longer match an active skill and target
+  name, even if their old source still exists. An incomplete active package
+  fails validation before pruning; it is not treated as a retirement.

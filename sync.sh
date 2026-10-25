@@ -24,6 +24,8 @@ source "$SCRIPT_DIR/lib/link.sh"
 source "$SCRIPT_DIR/lib/env.sh"
 
 OS="$(detect_os)"
+previous_repo_dir="$(installed_agentdots_dir)"
+preflight_install "$SCRIPT_DIR" "$previous_repo_dir"
 
 cat <<'EOB'
 
@@ -38,10 +40,7 @@ cat <<'EOB'
 
 EOB
 
-# ---- Persist AGENT_DOTS_DIR + alias ----
-ensure_agentdots_env "$SCRIPT_DIR"
 log_info "OS: $OS"
-log_info "AGENT_DOTS_DIR: $AGENT_DOTS_DIR"
 echo
 
 # ---- Targets ----
@@ -59,7 +58,7 @@ echo
 
 # ---- Symlink sync ----
 log_step "Linking skills..."
-install_skills "$SKILLS_DIR"
+install_skills "$SKILLS_DIR" "$previous_repo_dir"
 echo
 
 # ---- Global instructions ----
@@ -69,8 +68,13 @@ echo
 
 # ---- Prune ----
 log_step "Pruning stale links that point into this repo..."
-prune_stale_links "$SCRIPT_DIR"
+prune_stale_links "$SCRIPT_DIR" "$previous_repo_dir"
 echo
+
+# Persist the new location only after successful convergence, so a retry can
+# still identify links owned by a checkout that was moved.
+ensure_agentdots_env "$SCRIPT_DIR"
+log_info "AGENT_DOTS_DIR: $AGENT_DOTS_DIR"
 
 log_ok "Sync complete."
 log_info "Open a new terminal session to use the 'agentdots' alias."

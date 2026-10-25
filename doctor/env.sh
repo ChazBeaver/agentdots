@@ -20,14 +20,14 @@ if [ ! -f "$ENV_FILE" ]; then
   exit 1
 fi
 
-if grep -Fqx "export AGENT_DOTS_DIR=\"$REPO_DIR\"" "$ENV_FILE"; then
+if [[ "$(installed_agentdots_dir)" == "$REPO_DIR" ]]; then
   log_ok "AGENT_DOTS_DIR → $REPO_DIR"
 else
   log_err "AGENT_DOTS_DIR missing or points elsewhere in $ENV_FILE"
   status=1
 fi
 
-if grep -q '^alias agentdots=' "$ENV_FILE"; then
+if grep -Fxq 'alias agentdots="cd \$AGENT_DOTS_DIR"' "$ENV_FILE"; then
   log_ok "alias agentdots present"
 else
   log_err "alias agentdots missing from $ENV_FILE"

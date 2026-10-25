@@ -11,6 +11,7 @@ directories and are never touched.
 ## Quick start
 
 ```bash
+mkdir -p ~/Projects/home
 git clone <repo-url> ~/Projects/home/agentdots
 cd ~/Projects/home/agentdots
 ./sync.sh
@@ -30,6 +31,14 @@ To check for drift without changing anything:
 
 `sync.sh` also writes `AGENT_DOTS_DIR` and an `agentdots` alias (cd into the
 repo) into `~/.dotfiles-env.sh`, next to the appdots and hyprdots entries.
+
+Personal repositories live at `~/Projects/home/<repo>` on every machine.
+Create the parent before cloning as shown above; successful sync also creates
+it if missing. Sync creates the environment file as needed, repairs this
+repo's export and alias, removes duplicates for those keys, and preserves
+other repos' entries. It registers the current checkout without moving it.
+This registry supplies appdots' `home-status`, `home-pull`, `home-sync`, and
+`home-doctor`. Run `bash tests/env.sh` for isolated registration checks.
 
 ## Use the skills
 

@@ -11,9 +11,10 @@ against the original request, files, and observed results.
 
 ## Establish the review inputs
 
-Read the owning repository's instructions, applicable nested instructions,
-relevant glossary and ADRs, and any documented standards. Obtain the original
-request or task brief from the user or an identified issue/plan. Resolve
+Read the owning repository's instructions and applicable nested instructions.
+Read glossary entries for concepts the change touches, ADRs governing the
+changed components, and standards applicable to the review scope. Obtain the
+original request or task brief from the user or an identified issue/plan. Resolve
 ambiguity from those sources rather than deriving requirements from the code
 being reviewed. If no requirements are available, review what can be assessed
 and mark requirements NOT VERIFIED; do not invent a spec or call that a pass.
@@ -37,6 +38,11 @@ Check important failure, cancellation, and boundary cases. Identify missing
 behavior and demonstrated regressions. Compare in-scope changes with the
 documented standards and accepted decisions; distinguish hard violations from
 optional design suggestions.
+
+For changes to agent-facing guidance, check scoped placement, unnecessary
+always-loaded context, and duplicated or obsolete instructions. Report
+consolidation proposals as recommendations, with source locations, a canonical
+home, and the proposed edit.
 
 Run appropriate isolated checks when permitted. Inspect unfamiliar entrypoints
 before executing them: names such as test or doctor do not establish their

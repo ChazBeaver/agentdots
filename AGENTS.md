@@ -29,9 +29,6 @@ for a manual handoff between a builder and a separate reviewer.
 Use [the task brief](docs/templates/task-brief.md) to make the requested
 outcome, scope, acceptance criteria, and evidence explicit. It can live in
 an existing issue or plan; a new file is not required for every change.
-Read relevant repository glossaries and architectural decisions when a
-repository points to them. Store vocabulary, rationale, and task requirements
-in their respective documents rather than mixing them into global policy.
 
 ## Verify a change
 

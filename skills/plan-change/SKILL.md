@@ -16,11 +16,12 @@ relevant code, and existing planning documents. Identify the requested outcome,
 boundaries, and operations already authorized. Research facts the repository
 can answer; ask the user for unresolved decisions.
 
-Follow domain-document pointers in the repository. Read relevant vocabulary
-and ADRs. Honor existing glossary names and maps, including legacy `CONTEXT.md`
-layouts; use a root `GLOSSARY.md` when the first agreed term needs a home and
-the repository has no established glossary. Missing documentation alone does
-not block planning or justify creating an empty hierarchy.
+Read repository-linked glossary entries for concepts the task touches and
+ADRs governing the proposed changes. Honor existing glossary names and maps,
+including legacy `CONTEXT.md` layouts; use a root `GLOSSARY.md` when the first
+agreed term needs a home and the repository has no established glossary.
+Missing documentation alone does not block planning or justify creating an
+empty hierarchy.
 
 ## Resolve consequential questions
 

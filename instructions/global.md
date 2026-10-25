@@ -43,6 +43,19 @@ Never commit credentials, tokens, session or history files, caches, or
 anything a tool generated about itself. If a tool rewrites a file you want to
 persist, persist the intended keys with a merge step rather than the file.
 
+## Maintain agent guidance
+
+Before adding guidance, check whether its canonical source already covers the
+behavior. Use `AGENTS.md` for behavior and conditional pointers, skills for
+procedures, glossaries for terms, ADRs for significant architectural rationale,
+and briefs for task requirements. Preserve superseded ADRs as history; load
+references only when relevant.
+
+When duplicated or obsolete guidance is discovered during requested work,
+report its locations and propose a canonical home and consolidation edit.
+Get the user's decision before merging or removing guidance unless that
+specific consolidation is already approved. Continue independent authorized work.
+
 ## Git
 
 - Use Conventional Commits and Conventional Branch names.

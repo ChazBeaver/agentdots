@@ -4,6 +4,12 @@ Use a short task brief to connect planning, implementation, and review. Start
 with one builder and one reviewer. Both skills are portable Markdown packages;
 they need no external skill dependencies or issue-tracker setup.
 
+Start each independent task in a fresh session from the owning repository
+(for example, `cd ~/Projects/home/agentdots` before launching the agent).
+Carry forward a short brief with the outcome, scope, acceptance criteria,
+evidence, and unresolved decisions. Keep coordinated work across repositories
+together when it shares one outcome, reading each repository's instructions.
+
 ## Plan
 
 In the repository that owns the change, ask:

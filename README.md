@@ -61,6 +61,8 @@ use only the portable `name` and `description` metadata.
 The [evaluation scenarios](evals/plan-review/scenarios.md) define expected
 behavior for future trials. A passing package validator and successful install
 establish structure and links; model behavior needs a separate trial.
+Start with the [reproducible review pilot](evals/plan-review/scenarios.md#prepare-the-first-review-pilot),
+which prepares disposable cases without invoking a model or changing clients.
 
 ## Manual operation
 

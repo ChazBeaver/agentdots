@@ -6,6 +6,49 @@ artifacts it needs. Use temporary fixtures for code examples; keep raw model
 responses, transcripts, and usage logs outside Git. Judge the behavior rather
 than matching headings or wording.
 
+## Prepare the first review pilot
+
+From the Agentdots checkout, run:
+
+```bash
+python3 -B evals/plan-review/prepare.py
+```
+
+This creates three repositories under a new temporary directory, each with a
+local baseline commit, a task brief, and working changes. It has no remotes,
+bypasses caller Git routing and hooks for fixture setup, and invokes no model.
+The cases cover correct work, passing tests hiding a failure, and a broken
+untracked implementation. The correct case also includes staged and unstaged
+work plus an explicitly excluded user edit. The temporary parent holds an
+`answer-key.json` mapping shuffled case IDs to the scenarios below and hashes
+of the review skill and generator used. Keep it outside reviewer inputs.
+
+Open a fresh session in each printed case directory and supply the installed
+review-changes skill plus this prompt:
+
+> Use review-changes against TASK.md. Review the staged, unstaged, and relevant
+> untracked working changes. Read AGENTS.md and verify the builder's claims in
+> BUILDER.md. Report requirements and standards separately with evidence.
+> Keep the review read-only and inspect only this case's repository.
+
+Use the client's permission controls if read-only access must be enforced;
+the prompt does not enforce it. Give the reviewer only its case and skill,
+without the answer key, generator, this scenario table, or previous reviews.
+Stop after one review per case and record the reports before diagnosing or
+changing the skill. Compare with the answer key and the expected behavior below.
+
+Keep reports and a trial record beside the temporary cases, outside Git.
+Record the date, client/model/effort, case IDs, skill/generator hashes, expected
+and observed verdicts, false findings, omitted evidence, unwanted actions,
+elapsed time, and usage if the client reports it; mark unavailable usage as
+unknown. Record any correction and rerun as a separate trial. Promote only a
+curated conclusion or demonstrated regression scenario into the repository.
+
+`./test.sh` checks fixture behavior and Git state, including that all bundled
+checks pass while two cases violate the brief. It does not run reviewers or
+establish model accuracy. Start with one review of each case before trying
+other clients or models; three synthetic cases do not establish general trust.
+
 ## Planning
 
 | Scenario | Prompt and artifacts | Expected behavior |

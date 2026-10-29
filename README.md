@@ -1,12 +1,17 @@
 # agentdots
 
 Portable AI agent rules and skills, installed by symlink into every agent CLI on the
-machine. Sibling of `appdots` (app configs) and `hyprdots` (Hyprland), using
-the same installer contract: declarative, idempotent, safe to rerun.
+machine. Installation is declarative, idempotent, and safe to rerun.
 
 One skill folder in this repo shows up identically in Claude Code, Codex, and
 OpenCode. Omarchy's bundled skills live alongside in the same target
 directories and are never touched.
+
+The [repository ownership map](instructions/global.md#where-things-live) is the
+canonical summary of sibling responsibilities, including Setupdots' new-machine
+coordination and one-time initial preferences. Follow its Setupdots pointer to
+that checkout's agent instructions and ADRs, and check its implementation status
+before assuming an installer or doctor exists.
 
 ## Quick start
 
@@ -30,7 +35,7 @@ To check for drift without changing anything:
 ```
 
 `sync.sh` also writes `AGENT_DOTS_DIR` and an `agentdots` alias (cd into the
-repo) into `~/.dotfiles-env.sh`, next to the appdots and hyprdots entries.
+repo) into `~/.dotfiles-env.sh`.
 
 Personal repositories live at `~/Projects/home/<repo>` on every machine.
 Create the parent before cloning as shown above; successful sync also creates

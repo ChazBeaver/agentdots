@@ -14,12 +14,13 @@ repository, and prefer a repository skill over improvising a procedure.
 ## Where things live
 
 Every personal repository lives under `~/Projects/home/`. Each one owns a
-single concern, converges the machine with its own script, and (where it
-sets one) exports its location from `~/.dotfiles-env.sh` together with a
-`cd` alias of the same name as the repository.
+single concern and documents its available commands. Where a repository
+implements registration, its own installer exports its location from
+`~/.dotfiles-env.sh` together with a `cd` alias of the same name as the repo.
 
-| Repository | Owns | Converge / verify | Env var |
+| Repository | Owns | Install / converge / verify | Env var |
 | --- | --- | --- | --- |
+| setupdots | New-machine coordination and one-time initial preferences, including the first theme selection | Planned: `install.sh`, `doctor.sh`; no routine `sync.sh` | `SETUP_DOTS_DIR` (planned) |
 | appdots | Application configs, shell, packages for Linux and macOS | `sync.sh`, `doctor.sh` | `APP_DOTS_DIR` |
 | hyprdots | Hyprland, Omarchy shell, pinned Omarchy plugins and themes | `sync.sh`, `doctor.sh`, `tests/` | `HYPR_DOTS_DIR` |
 | cyberdots | Optional, removable security and situational-awareness tooling for Omarchy | `install.sh`, `sync.sh`, `uninstall.sh`, `doctor.sh`, `tests/` | `CYBER_DOTS_DIR` |
@@ -27,9 +28,16 @@ sets one) exports its location from `~/.dotfiles-env.sh` together with a
 | wikinotes | DevOps notes, snippets, study plans, project plans, fzf search | `install.sh` | `WIKINOTES_DIR` |
 | omarchy-theme-vault | Personally maintained Omarchy themes and their wallpaper assets; hyprdots pins it by commit | `install.sh` registers the working clone; themes managed through hyprdots `themes.sh` | `OMARCHY_THEME_VAULT_DIR` |
 
-When a `cd` alias or env var is missing, check `~/.dotfiles-env.sh` first,
-then re-run that repository's converge script. When a symlink or package is
-wrong, run the owning repository's `doctor.sh`; it names the fix.
+Setupdots currently contains documentation and planning only. For new-machine
+coordination or initial-preference work, read
+`~/Projects/home/setupdots/AGENTS.md` and the ADRs it links. Keep the detailed
+architecture and preference lifecycle there; this table identifies the owner.
+
+When an installed repository's `cd` alias or env var is missing, check
+`~/.dotfiles-env.sh` first, then re-run its documented registration/convergence
+command. Do not treat planned commands or registration as installed features
+to repair. When a symlink or package is wrong, run the owning repository's
+`doctor.sh` if it provides one; otherwise follow its documented checks.
 
 Put a file in the repository that owns its concern. Skills never go in appdots
 or hyprdots' global scope; a procedure that only makes sense inside one
